@@ -1,4 +1,4 @@
-import numpy as np
+import random
 
 def create_nodes(n=300, seed=None):
     """Sample $n$ nodes uniformly at random in the unit square. Each of
@@ -10,9 +10,9 @@ def create_nodes(n=300, seed=None):
         lists ts, xs, ys of time-coordinates x-coordinates and y-coordinates.
         Sorted increasingly in time
     """
-    np.random.seed(seed)
-    xs, ys, ts = [np.random.rand(n) for _ in range(3)]
-    ts = ts * 1.0 * n
+    random.seed(seed)
+    xs, ys, ts = [[random.random() for _ in range(n)] for _ in range(3)]
+    ts = [n * t for t in ts]
     return list(zip(*[[t,x,y] for t,x,y in sorted(zip(ts,xs,ys))]))
 
 def power_prof(delta=5):
@@ -36,13 +36,14 @@ def torus_dist(p1, p2):
         d = |p1 - p2_shift| = |p1_shift - p2|
     """
 
-    shifts = np.array([0, 1, -1])
-    pts = np.array([p1, p2])
-    pos_xy = [(np.abs(dz + shifts))<.5 for dz in pts[0] - pts[1]]
-
-    shift_pts = [[(coord + sign * shifts)[pos_z][0] for coord,pos_z in zip(p, pos_xy)]
+    shifts = [0, 1, -1]
+    pts =[p1, p2]
+    pos_xy = [[(abs(c0 - c1 + shift))<.5 for shift in shifts] for c0, c1 in zip(pts[0], pts[1])] 
+    
+    shift_pts = [[sum([(coord + sign * shift) * pos for shift, pos in zip(shifts, pos_z)])
+                  for coord,pos_z in zip(p, pos_xy)]
                 for sign, p in zip([1, -1], pts)]
-    d = np.sum((pts[0] - shift_pts[1])**2 )
+    d = sum([(c0 - c1)**2 for c0, c1  in zip(pts[0], shift_pts[1])] )
     return d, shift_pts
 
 
@@ -58,15 +59,16 @@ def spam(ts, xs, ys, gamma=.5, profile=power_prof(), seed=None):
     #Result
         list of edges defined by endpoints
     """
-    np.random.seed(seed)
+    random.seed(seed)
 
-    n = len(xs)
+    nnn = len(xs)
     edges = []
     xys = [xs, ys]
-    degs = np.ones(n)
-    uij = np.random.rand(n, n)
+    degs = [1 for _ in range(nnn)]
+    uij = [[random.random() for _ in range(nnn)]
+           for _ in range(nnn)]
 
-    for i in range(n):
+    for i in range(nnn):
         for j in range(i):
 
             #compute distance
@@ -75,10 +77,10 @@ def spam(ts, xs, ys, gamma=.5, profile=power_prof(), seed=None):
             arg = (d * ts[i]) / (gamma * degs[j])
 
             #is edge drawn?
-            if  uij[i,j] > profile(arg):continue
-
+            if  uij[i][j] > profile(arg):continue
+            
             #increase degree
-            degs[j] += 1
+            degs[j] = degs[j] + 1
 
             #create edges
             [edges.append([pts[i], shift_pts[j]])
