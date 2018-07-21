@@ -19,7 +19,7 @@ where <img src="http://latex.codecogs.com/gif.latex?$\deg_{T_i-}(X_j)$" />  deno
 </p>
 
 ## Tikz output
-The script ``example.py`` allows you to generate a TikZ picture for the spatial preferential attachment model with <img src="http://latex.codecogs.com/gif.latex?$\gamma=2$" /> and <img src="http://latex.codecogs.com/gif.latex?$\delta=5$" />.
+The script [example.py](./example.py) allows you to generate a TikZ picture for the spatial preferential attachment model with <img src="http://latex.codecogs.com/gif.latex?$\gamma=2$" /> and <img src="http://latex.codecogs.com/gif.latex?$\delta=5$" />.
 To save a realization with 400 nodes and seed 48 into the 'pamPic.tex' run
 ```sh
 python3 example.py 400 48 pamPic.tex
